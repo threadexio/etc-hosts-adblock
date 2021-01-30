@@ -47,17 +47,16 @@ with open(out, 'a') as f:
 		lines = res.text.split('\n')
 
 		for line in lines:
-			if not '#' in line and line != "":
-				try:
-					match = re.findall("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}", line)[0]
-				except IndexError:
-					pass
-				if not match:
-					f.write('0.0.0.0 ' + line + '\n')
-					new_size += 1
-				elif match == '0.0.0.0':
-					f.write(line + '\n')
-					new_size += 1
+			line = line.strip()
+			if line != "":
+				if '#' not in line:
+					match = re.search("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}", line)
+					if not match:
+						f.write('0.0.0.0 ' + line + '\n')
+						new_size += 1
+					else:
+						f.write(line + '\n')
+						new_size += 1
 		print(COLOR.Green + '[✔]' + COLOR.Reset + f' Got url {url} with {len(lines)} domains')
 	print(COLOR.Blue + '\n[*]' + COLOR.Reset + f' New hosts file: {out}')
 	print(COLOR.Blue + '[*]' + COLOR.Reset + f' Domains on blocklist: {new_size-original_size}')
