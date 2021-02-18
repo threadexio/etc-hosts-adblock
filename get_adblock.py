@@ -14,9 +14,8 @@ class COLOR:
 	Blue   = '\033[0;34m'
 	Reset  = '\033[0m'
 
-
 urls = []
-
+# \b([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}\b
 # Read the urls
 with open(list, 'r') as f:
 	for line in f.readlines():
@@ -49,14 +48,13 @@ with open(out, 'a') as f:
 		for line in lines:
 			line = line.strip()
 			if line != "":
-				if '#' not in line:
-					match = re.search("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}", line)
-					if not match:
-						f.write('0.0.0.0 ' + line + '\n')
-						new_size += 1
-					else:
+				if line[0] != "#" and "localhost" not in line:
+					if re.search("^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}(\\s+|\\t+)\\b([a-z0-9]+(-[a-z0-9]+)*\\.)+[a-z]{2,}\\b$", line):
 						f.write(line + '\n')
-						new_size += 1
+					elif re.search("\\b([a-z0-9]+(-[a-z0-9]+)*\\.)+[a-z]{2,}\\b", line):
+						f.write('0.0.0.0 ' + line + '\n')
+
+
 		print(COLOR.Green + '[✔]' + COLOR.Reset + f' Got url {url} with {len(lines)} domains')
 	print(COLOR.Blue + '\n[*]' + COLOR.Reset + f' New hosts file: {out}')
 	print(COLOR.Blue + '[*]' + COLOR.Reset + f' Domains on blocklist: {new_size-original_size}')
